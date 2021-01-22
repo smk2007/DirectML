@@ -312,6 +312,13 @@ PYBIND11_MODULE(pydirectml, module)
         .def_readwrite("width", &DML_SIZE_2D::Width)
         .def_readwrite("height", &DML_SIZE_2D::Height);
 
+    py::class_<DML_SCALE_BIAS>(module, "ScaleBias")
+        .def(py::init([](float scale, float bias) {
+            return DML_SCALE_BIAS{ scale, bias };
+            }))
+        .def_readwrite("scale", &DML_SCALE_BIAS::Scale)
+        .def_readwrite("bias", &DML_SCALE_BIAS::Bias);
+
     py::class_<DML_SCALAR_UNION>(module, "ScalarUnion")
         .def(py::init([](float value) {
             DML_SCALAR_UNION scalar = {};
@@ -494,6 +501,17 @@ PYBIND11_MODULE(pydirectml, module)
         py::arg("output_sizes"),
         py::arg("value_data_type"),
         py::arg("value"));
+
+    module.def("pow", [](
+        dml::Expression input,
+        float exponent,
+        const dml::Optional<DML_SCALE_BIAS>& scaleBias = dml::NullOpt) {
+            return dml::Pow(input, exponent, scaleBias);
+        }, 
+        "Raises input to an exponent",
+        py::arg("input"),
+        py::arg("exponent"),
+        py::arg("scale_bias"));
 
     module.def("gemm", [](
         dml::Expression a,
