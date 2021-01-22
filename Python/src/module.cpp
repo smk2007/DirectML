@@ -502,16 +502,25 @@ PYBIND11_MODULE(pydirectml, module)
         py::arg("value_data_type"),
         py::arg("value"));
 
+    module.def("identity", [](
+        dml::Expression input,
+        const dml::Optional<DML_SCALE_BIAS>& scaleBias) {
+            return dml::Identity(input, scaleBias);
+        }, 
+        "Identity",
+        py::arg("input"),
+        py::arg("scale_bias") = dml::NullOpt);
+
     module.def("pow", [](
         dml::Expression input,
         float exponent,
-        const dml::Optional<DML_SCALE_BIAS>& scaleBias = dml::NullOpt) {
+        const dml::Optional<DML_SCALE_BIAS>& scaleBias) {
             return dml::Pow(input, exponent, scaleBias);
         }, 
         "Raises input to an exponent",
         py::arg("input"),
         py::arg("exponent"),
-        py::arg("scale_bias"));
+        py::arg("scale_bias") = dml::NullOpt);
 
     module.def("gemm", [](
         dml::Expression a,
