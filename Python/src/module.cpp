@@ -312,6 +312,14 @@ PYBIND11_MODULE(pydirectml, module)
         .def_readwrite("width", &DML_SIZE_2D::Width)
         .def_readwrite("height", &DML_SIZE_2D::Height);
 
+    py::class_<DML_SCALAR_UNION>(module, "ScalarUnion")
+        .def(py::init([](float value) {
+            DML_SCALAR_UNION scalar = {};
+            scalar.Float32 = value;
+            return scalar;
+            }))
+        .def_readwrite("Float32", &DML_SCALAR_UNION::Float32);
+
     py::class_<dml::FusedActivation>(module, "FusedActivation")
         .def(py::init<DML_OPERATOR_TYPE, float, float>(),
             py::arg("activation"),
@@ -480,6 +488,12 @@ PYBIND11_MODULE(pydirectml, module)
         py::arg("axis"),
         py::arg("epsilon"),
         py::arg("p"));
+
+    module.def("fill_value_constant", &dml::FillValueConstant, "Creates a tensor from a scalar",
+        py::arg("graph"),
+        py::arg("output_sizes"),
+        py::arg("value_data_type"),
+        py::arg("value"));
 
     module.def("gemm", [](
         dml::Expression a,
