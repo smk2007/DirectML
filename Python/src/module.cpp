@@ -475,6 +475,12 @@ PYBIND11_MODULE(pydirectml, module)
         py::arg("beta"),
         py::arg("bias"));
 
+    module.def("lp_normalization", &dml::LpNormalization, "Performs L1 or L2 normalization",
+        py::arg("input"),
+        py::arg("axis"),
+        py::arg("epsilon"),
+        py::arg("p"));
+
     module.def("gemm", [](
         dml::Expression a,
         dml::Expression b,

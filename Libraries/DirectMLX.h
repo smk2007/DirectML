@@ -2710,9 +2710,29 @@ namespace dml
         return output;
     }
 
-    // 
-    // TODO: LpNormalization
-    // 
+    inline Expression LpNormalization(
+        Expression input,
+        uint32_t axis,
+        float epsilon,
+        uint32_t p)
+    {
+        detail::GraphBuilder* builder = input.Impl()->GetGraphBuilder();
+        TensorDesc inputTensor = input.Impl()->GetOutputDesc();
+        TensorDesc outputTensor(inputTensor.dataType, inputTensor.sizes, builder->GetTensorPolicy());
+
+        DML_LP_NORMALIZATION_OPERATOR_DESC  desc = {};
+        desc.InputTensor = inputTensor.AsPtr<DML_TENSOR_DESC>();
+        desc.OutputTensor = outputTensor.AsPtr<DML_TENSOR_DESC>();
+        desc.Axis = axis;
+        desc.Epsilon = epsilon;
+        desc.P = p;
+
+        detail::NodeOutput* const inputs[] = { input.Impl() };
+        detail::NodeID node = builder->CreateOperatorNode(DML_OPERATOR_LP_NORMALIZATION, &desc, inputs);
+        detail::NodeOutput* output = builder->CreateNodeOutput(node, 0, std::move(outputTensor));
+
+        return output;
+    }
 
     // 
     // TODO: RNN
